@@ -23,18 +23,17 @@
             </tr>
         </thead>
         <tbody>
-            </tbody>
+        </tbody>
     </table>
 </div>
 
-<script src="prData.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/colresizable/1.6.0/colResizable-1.6.min.js"></script>
 <script>
 $(document).ready(function() {
     $('#repoTable').DataTable({
-        data: myData,
+        ajax: "https://2eecxqpvvoh2ahbx3zkvgv5rx40gqtqm.lambda-url.eu-north-1.on.aws/",
         columns: [
             { data: 'repo', width: '10%'},
             { 
@@ -63,39 +62,5 @@ $("#repoTable").colResizable({
     });
 </script>
 </body>
-<!--
-```python
 
-import json
-from util import _get
-
-repos = [
-    "kafka-operator",
-    "kafka-k8s-operator",
-    "karapace-operator",
-    "karapace-k8s-operator",
-    "kafka-connect-operator",
-    "kafka-connect-k8s-operator",
-    "kafka-ui-operator",
-    "kafka-ui-k8s-operator",
-    "zookeeper-operator",
-    "zookeeper-k8s-operator",
-]
-
-data = []
-for _repo in repos:
-    res = _get(_repo, "pulls?state=open")
-    data += [{
-        "repo": _repo.replace("-operator", ""),
-        "title": i["title"] + "@@@" + i["html_url"],
-        "created": i["created_at"].replace("T", " ").replace("Z", " "),
-        "user": i["user"]["login"]
-    } for i in res]
-
-
-open("prData.js", "w").write(
-    f"myData = {json.dumps(data, indent=4)}"
-)
-```
--->
 </html>
