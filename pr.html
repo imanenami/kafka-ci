@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Open PR Tracker</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f4f7f6; }
+        .container { background: white; padding: 20px; border-radius: 8px; shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Open PR Tracker</h2>
+    <table id="repoTable" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Repository</th>
+                <th>Title</th>
+                <th>Create Time</th>
+                <th>User</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+</div>
+
+<script src="prData.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/colresizable/1.6.0/colResizable-1.6.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#repoTable').DataTable({
+        data: myData,
+        columns: [
+            { data: 'repo', width: '10%'},
+            { 
+                data: 'title',
+                render: function(data) {
+                    parts = data.split("@@@")
+                    return `<a href="${parts[1]}" target="_blank" style="color: #007bff; text-decoration: none;">${parts[0]}</a>`;
+                },
+                width: '50%'
+            },
+            { data: 'created', width: '25%' },
+            { data: 'user', width: '15%' }
+        ],
+        responsive: true,
+        pageLength: 10,
+        order: [[2, 'desc']], // Sort by Create Time descending
+        autoWidth: false
+    });
+});
+
+$("#repoTable").colResizable({
+        liveDrag: true,        // Columns resize as you drag
+        gripInnerHtml: "<div class='grip'></div>", 
+        draggingClass: "dragging", 
+        resizeMode: 'fit'      // 'fit' keeps table width constant, 'flex' allows overflow
+    });
+</script>
+</body>
+<!--
+```python
+
+import json
+from util import _get
+
+repos = [
+    "kafka-operator",
+    "kafka-k8s-operator",
+    "karapace-operator",
+    "karapace-k8s-operator",
+    "kafka-connect-operator",
+    "kafka-connect-k8s-operator",
+    "kafka-ui-operator",
+    "kafka-ui-k8s-operator",
+    "zookeeper-operator",
+    "zookeeper-k8s-operator",
+]
+
+data = []
+for _repo in repos:
+    res = _get(_repo, "pulls?state=open")
+    data += [{
+        "repo": _repo.replace("-operator", ""),
+        "title": i["title"] + "@@@" + i["html_url"],
+        "created": i["created_at"].replace("T", " ").replace("Z", " "),
+        "user": i["user"]["login"]
+    } for i in res]
+
+
+open("prData.js", "w").write(
+    f"myData = {json.dumps(data, indent=4)}"
+)
+```
+-->
+</html>
