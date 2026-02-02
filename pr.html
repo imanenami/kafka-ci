@@ -5,21 +5,51 @@
     <title>Open PR Tracker</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f4f7f6; }
-        .container { background: white; padding: 20px; border-radius: 8px; shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background-color: #f4f7f6;
+        }
+        select {
+            min-width: 50px;
+            max-width: 125px
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .spinnerContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-
-<div class="container">
+<div id="loadingSpinner" class="spinnerContainer">
+    <img src="loading-image.gif" alt="Loading..." width="128px" height="128px">
+</div>
+<div id="tableContainer" class="container" style="display:none;">
     <h2>Open PR Tracker</h2>
     <table id="repoTable" class="display" style="width:100%">
         <thead>
             <tr>
                 <th>Repository</th>
                 <th>Title</th>
-                <th>Create Time</th>
+                <th>Final</th>
+                <th>Open For (Days)</th>
                 <th>User</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -28,29 +58,88 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/colresizable/1.6.0/colResizable-1.6.min.js"></script>
 <script>
+clearFilters = 'ALL';
 $(document).ready(function() {
     $('#repoTable').DataTable({
-        ajax: "https://2eecxqpvvoh2ahbx3zkvgv5rx40gqtqm.lambda-url.eu-north-1.on.aws/",
+        ajax: "https://gnx6ywx8q5.execute-api.eu-north-1.amazonaws.com/main/open-prs",
         columns: [
-            { data: 'repo', width: '10%'},
+            { data: 'repo', width: '15%'},
             { 
                 data: 'title',
                 render: function(data) {
-                    parts = data.split("@@@")
-                    return `<a href="${parts[1]}" target="_blank" style="color: #007bff; text-decoration: none;">${parts[0]}</a>`;
+                    return marked.parse(data).replace('href=', 'target="_blank" href=')
                 },
                 width: '50%'
             },
-            { data: 'created', width: '25%' },
+            {
+                data: "draft",
+                width: "5%",
+                render: function (data, type, row) {
+                    if (data === false) {
+                    return '<span style="color:green;">✅</span>';
+                    } else {
+                    return '<span style="color:red;">📝</span>';
+                    }
+                }
+            },
+            {
+                data: 'created',
+                width: '15%',
+                render: function(data) {
+                    return Math.floor((Date.now() - Date.parse(data)) / 3600000 / 24)
+                }
+            },
             { data: 'user', width: '15%' }
         ],
         responsive: true,
         pageLength: 10,
-        order: [[2, 'desc']], // Sort by Create Time descending
-        autoWidth: false
+        order: [[3, 'desc']], // Sort by Create Time descending
+        autoWidth: false,
+        initComplete: function () {
+            $('#loadingSpinner').hide(); // Hide the spinner
+            $('#tableContainer').show(); // Show the table container
+            this.api()
+                .columns()
+                .every(function () {
+                    let column = this;
+                    // Skip filtering for title & open for
+                    if (column.index() != 1 && column.index() != 3) {
+                        // Create select element
+                        let select = document.createElement('select');
+                        select.add(new Option(clearFilters));
+                        $('#repoTable thead tr:eq(1) th:eq('+column.index()+')').empty().append(select);
+
+                        // Apply listener for user change in value
+                        select.addEventListener('change', function () {
+                            if (select.value == clearFilters) {
+                                column.search('').draw();
+                            } else {
+                                column
+                                    .search("^" + select.value + "$", true, false)
+                                    .draw();
+                            }
+                        });
+
+                        // Add list of options
+                        if (column.index() == 2) {
+                            select.add(new Option("✅"));
+                            select.add(new Option("📝"))
+                        } else {
+                            column
+                                .data()
+                                .unique()
+                                .sort()
+                                .each(function (d, j) {
+                                    select.add(new Option(d));
+                                });
+                        }
+                    }
+                });
+        }
     });
 });
 
