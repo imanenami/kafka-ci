@@ -3,11 +3,11 @@
 import json
 import logging
 import os
+import urllib3
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from typing import Literal
 
-import urllib3
 
 logger = logging.getLogger()
 log_level = os.environ.get("LAMBDA_LOG_LEVEL", "INFO")
@@ -20,32 +20,16 @@ EXT_PORT = 2773
 SECRET_ID = "github/bot-token"
 
 # App config
-BASE_URI = "https://api.github.com/repos/canonical"
 GH_API_VERSION = "2022-11-28"
+BASE_URI = "https://api.github.com/repos/canonical"
 HEADERS = {
     "Accept": "application/vnd.github+json",
     "X-GitHub-Api-Version": GH_API_VERSION,
 }
 REPOS = [
-    "charmed-kafka-snap",
-    "charmed-kafka-rock",
-    "kafka-bundle",
-    "kafka-k8s-bundle",
-    "kafka-rock",
-    "charmed-karapace-snap",
-    "charmed-karapace-rock",
-    "charmed-kafka-ui-snap",
-    "charmed-kafka-ui-rock",
-    "kafka-operator",
-    "kafka-k8s-operator",
-    "karapace-operator",
-    "karapace-k8s-operator",
-    "kafka-connect-operator",
-    "kafka-connect-k8s-operator",
-    "kafka-ui-operator",
-    "kafka-ui-k8s-operator",
-    "zookeeper-operator",
-    "zookeeper-k8s-operator",
+    r.strip() 
+    for r in os.environ.get("REPOS", "").split(",") 
+    if r.strip()
 ]
 
 
@@ -79,9 +63,10 @@ def get_open_prs(results: dict[str, list], repo: str, headers: dict = {}):
     data = [
         {
             "repo": repo.replace("-operator", ""),
-            "title": i["title"] + "@@@" + i["html_url"],
+            "title": f'[{i["title"]}]({i["html_url"]})',
             "created": i["created_at"].replace("T", " ").replace("Z", " "),
             "user": i["user"]["login"],
+            "draft": i["draft"],
         }
         for i in res
     ]
