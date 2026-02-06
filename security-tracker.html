@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/4.1.0/cdn.min.js"></script>
+    <script src="vulnData.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+        #myGrid {
+            height: 600px;
+            width: 100%;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .ag-theme-alpine {
+            --ag-header-background-color: #f8fafc;
+            --ag-header-foreground-color: #1e293b;
+            --ag-border-color: #e2e8f0;
+            --ag-font-size: 14px;
+            --ag-row-hover-color: #f1f5f9;
+            --ag-selected-row-background-color: #e0f2fe;
+        }
+        h1 {
+            color: #1e293b;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Security Tracker</h1>
+        <h3 id="updated"></h3>
+        <div id="myGrid" class="ag-theme-alpine"></div>
+    </div>
+
+    <script>
+        const columnDefs = [
+            { field: "Product" },
+            { field: "PkgName", headerName: "Package" },
+            { field: "VulnerabilityID", headerName: "CVE", width: 150 },
+            { field: "Severity", width: 125 },
+            { field: "FixedVersion" },
+            { field: "InstalledVersion" },
+            { field: "Target", width: 100 }
+        ];
+
+        const gridOptions = {
+            columnDefs: columnDefs,
+            rowData: rawVulnData,
+            pagination: true,
+            paginationPageSize: 10,
+            animateRows: true,
+            enableCellTextSelection: true,
+            ensureDomOrder: true,
+            defaultColDef: {
+                resizable: true,
+                filter: true,
+                sortable: true
+            }
+        };
+
+        // Initialize the Grid
+        const gridDiv = document.querySelector('#myGrid');
+        const gridApi = agGrid.createGrid(gridDiv, gridOptions);
+        const updatedStr = dateFns.formatDistance(Date.parse(updatedAt), Date(), { addSuffix: true });
+        document.getElementById("updated").innerHTML = "Last Update: " + updatedStr;
+    </script>
+</body>
+</html>
