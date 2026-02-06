@@ -1,216 +1,191 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-        <meta charset="UTF-8" />
-        <title>Kafka Charms CI</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPE Kafka Central</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --accent-color: #2563eb; 
+            --accent-hover: #1d4ed8;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #f8fafc 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--text-dim);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 24px;
+            width: 90%;
+            max-width: 1000px;
+            margin: 40px auto 60px auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-color);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover i {
+            color: var(--accent-hover);
+        }
+
+        .card i {
+            font-size: 2.2rem;
+            margin-bottom: 18px;
+            color: var(--accent-color);
+            transition: color 0.2s ease;
+        }
+
+        .card h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        .card span {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        .disabled {
+            background: #f1f5f9;
+            opacity: 0.6;
+            cursor: not-allowed;
+            border-style: dashed;
+        }
+
+        .disabled i {
+            color: #94a3b8;
+        }
+
+        .disabled:hover {
+            transform: none;
+            border-color: var(--border-color);
+            box-shadow: none;
+        }
+
+        @media (max-width: 850px) {
+            .container { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 550px) {
+            .container { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
-
 <body>
-        <h1>Kafka Machine Charms</h1>
-        <hr>
-        <div class="markdown-heading" dir="auto">
-                <h2 tabindex="-1" class="heading-element" dir="auto">Charmed Apache Kafka Operator</h2>
-                <p dir="auto"><a href="https://charmhub.io/kafka" rel="nofollow"><img
-                                        src="https://camo.githubusercontent.com/2e5d2836107add421d81e51369119d9acf21757e88047dd6d876b2a8e32863e6/68747470733a2f2f636861726d6875622e696f2f6b61666b612f62616467652e737667"
-                                        alt="CharmHub Badge" data-canonical-src="https://charmhub.io/kafka/badge.svg"
-                                        style="max-width: 100%;"></a>
-                        <a href="https://github.com/canonical/kafka-operator/actions/workflows/release.yaml"><img
-                                        src="https://github.com/canonical/kafka-operator/actions/workflows/release.yaml/badge.svg"
-                                        alt="Release" style="max-width: 100%;"></a>
-                        <a
-                                href="https://github.com/canonical/kafka-operator/actions/workflows/ci.yaml?query=branch%3Amain"><img
-                                        src="https://github.com/canonical/kafka-operator/actions/workflows/ci.yaml/badge.svg?branch=main"
-                                        alt="Tests" style="max-width: 100%;"></a>
-                        <a href="https://app.readthedocs.com/projects/canonical-charmed-kafka/builds/?version__slug=4"
-                                rel="nofollow"><img
-                                        src="https://camo.githubusercontent.com/552a4e5fb4b19706ed13480b712241bf6e29aacf3983d029635ddefcfb5b807b/68747470733a2f2f72656164746865646f63732e636f6d2f70726f6a656374732f63616e6f6e6963616c2d636861726d65642d6b61666b612f62616467652f3f76657273696f6e3d34267374796c653d706c6173746963"
-                                        alt="Docs"
-                                        data-canonical-src="https://readthedocs.com/projects/canonical-charmed-kafka/badge/?version=4&amp;style=plastic"
-                                        style="max-width: 100%;"></a>
-                </p>
 
-                <div class="markdown-heading" dir="auto">
-                        <h2 tabindex="-1" class="heading-element" dir="auto">Charmed Apache ZooKeeper Operator</h2>
-                </div>
-                <p dir="auto"><a href="https://charmhub.io/zookeeper" rel="nofollow"><img
-                                        src="https://camo.githubusercontent.com/131156cb6ecf50f88cf855778e83ef796e0a6558bd074290b62df42f96c55f63/68747470733a2f2f636861726d6875622e696f2f7a6f6f6b65657065722f62616467652e737667"
-                                        alt="CharmHub Badge"
-                                        data-canonical-src="https://charmhub.io/zookeeper/badge.svg"
-                                        style="max-width: 100%;"></a>
-                        <a href="https://github.com/canonical/zookeeper-operator/actions/workflows/release.yaml"><img
-                                        src="https://github.com/canonical/zookeeper-operator/actions/workflows/release.yaml/badge.svg"
-                                        alt="Release" style="max-width: 100%;"></a>
-                        <a
-                                href="https://github.com/canonical/zookeeper-operator/actions/workflows/ci.yaml?query=branch%3Amain"><img
-                                        src="https://github.com/canonical/zookeeper-operator/actions/workflows/ci.yaml/badge.svg?branch=main"
-                                        alt="Tests" style="max-width: 100%;"></a>
-                </p>
+    <header>
+        <h1>Monitoring Hub</h1>
+    </header>
 
-                <div class="markdown-heading" dir="auto">
-                        <h2 tabindex="-1" class="heading-element" dir="auto">Charmed Karapace Operator</h2>
-                </div>
-                <p dir="auto"><a href="https://charmhub.io/karapace" rel="nofollow"><img
-                                        src="https://camo.githubusercontent.com/63148e8ea248e60732e73f41ce55832121d62805bd98b792623a0cbc6ac6fc42/68747470733a2f2f636861726d6875622e696f2f6b617261706163652f62616467652e737667"
-                                        alt="CharmHub Badge" data-canonical-src="https://charmhub.io/karapace/badge.svg"
-                                        style="max-width: 100%;"></a>
-                        <a href="https://github.com/canonical/karapace-operator/actions/workflows/release.yaml"><img
-                                        src="https://github.com/canonical/karapace-operator/actions/workflows/release.yaml/badge.svg"
-                                        alt="Release" style="max-width: 100%;"></a>
-                        <a
-                                href="https://github.com/canonical/karapace-operator/actions/workflows/ci.yaml?query=branch%3Amain"><img
-                                        src="https://github.com/canonical/karapace-operator/actions/workflows/ci.yaml/badge.svg?branch=main"
-                                        alt="Tests" style="max-width: 100%;"></a>
-                        <a href="https://github.com/canonical/karapace-operator/actions/workflows/sync_docs.yaml"><img
-                                        src="https://github.com/canonical/karapace-operator/actions/workflows/sync_docs.yaml/badge.svg"
-                                        alt="Docs" style="max-width: 100%;"></a>
-                </p>
+    <div class="container">
+        <a href="health.html" class="card">
+            <i class="fas fa-eye"></i>
+            <h3>Health Check</h3>
+            <span>General release and CI health</span>
+        </a>
 
-                <div class="markdown-heading" dir="auto">
-                        <h2 tabindex="-1" class="heading-element" dir="auto">Charmed Kafka Connect Operator</h2>
-                </div>
-                <p dir="auto"><a href="https://charmhub.io/kafka-connect" rel="nofollow"><img
-                                        src="https://charmhub.io/kafka-connect/badge.svg"
-                                        alt="CharmHub Badge" data-canonical-src="https://charmhub.io/kafka-connect/badge.svg"
-                                        style="max-width: 100%;"></a>
-                        <a
-                                href="https://github.com/canonical/kafka-connect-operator/actions/workflows/release.yaml"><img
-                                        src="https://github.com/canonical/kafka-connect-operator/actions/workflows/release.yaml/badge.svg"
-                                        alt="Release" style="max-width: 100%;"></a>
-                        <a
-                                href="https://github.com/canonical/kafka-connect-operator/actions/workflows/ci.yaml?query=branch%3Amain"><img
-                                        src="https://github.com/canonical/kafka-connect-operator/actions/workflows/ci.yaml/badge.svg?branch=main"
-                                        alt="Tests" style="max-width: 100%;"></a>
-                </p>
+        <a href="pr.html" class="card">
+            <i class="fas fa-code-merge"></i>
+            <h3>Open PR Tracker</h3>
+            <span>Live pull request status</span>
+        </a>
 
-                <div class="markdown-heading" dir="auto">
-                        <h2 tabindex="-1" class="heading-element" dir="auto">Charmed Kafka UI Operator</h2>
-                </div>
-                <p dir="auto"><a href="https://charmhub.io/kafka-ui" rel="nofollow"><img
-                                        src="https://charmhub.io/kafka-ui/badge.svg"
-                                        alt="CharmHub Badge" data-canonical-src="https://charmhub.io/kafka-ui/badge.svg"
-                                        style="max-width: 100%;"></a>
-                        <a href="https://github.com/canonical/kafka-ui-operator/actions/workflows/release.yaml"><img
-                                        src="https://github.com/canonical/kafka-ui-operator/actions/workflows/release.yaml/badge.svg"
-                                        alt="Release" style="max-width: 100%;"></a>
-                        <a
-                                href="https://github.com/canonical/kafka-ui-operator/actions/workflows/ci.yaml?query=branch%3Amain"><img
-                                        src="https://github.com/canonical/kafka-ui-operator/actions/workflows/ci.yaml/badge.svg?branch=main"
-                                        alt="Tests" style="max-width: 100%;"></a>
-                </p>
+        <a href="heatmap.html" class="card">
+            <i class="fas fa-vial-circle-check"></i>
+            <h3>CI Tracker</h3>
+            <span>Scheduled CI and release pipelines</span>
+        </a>
 
-                <div class="markdown-heading" dir="auto">
-                        <h2 tabindex="-1" class="heading-element" dir="auto">Kafka App Charm</h2>
-                </div>
-                <p dir="auto"><a href="https://charmhub.io/kafka-test-app" rel="nofollow"><img
-                                        src="https://charmhub.io/kafka-test-app/badge.svg"
-                                        alt="CharmHub Badge" data-canonical-src="https://charmhub.io/kafka-test-app/badge.svg"
-                                        style="max-width: 100%;"></a>
-                        <a href="https://github.com/canonical/kafka-test-app/actions/workflows/release.yaml"><img
-                                        src="https://github.com/canonical/kafka-test-app/actions/workflows/release.yaml/badge.svg"
-                                        alt="Release to latest/edge" style="max-width: 100%;"></a>
-                        <a href="https://github.com/canonical/kafka-test-app/actions/workflows/ci.yaml"><img
-                                        src="https://github.com/canonical/kafka-test-app/actions/workflows/ci.yaml/badge.svg"
-                                        alt="Tests" style="max-width: 100%;"></a>
-                </p>
+        <a href="security-tracker.html" class="card">
+            <i class="fas fa-shield-halved"></i>
+            <h3>Security Tracker</h3>
+            <span>Security scans & vulnerability reports</span>
+        </a>
 
-                <hr>
-                <h1>Kafka K8s Charms</h1>
-                <hr>
-                <div class="markdown-heading" dir="auto">
-                        <h2 tabindex="-1" class="heading-element" dir="auto">Charmed Apache Kafka K8s Operator</h2>
-                </div>
-                <p dir="auto"><a href="https://charmhub.io/kafka-k8s" rel="nofollow"><img
-                                        src="https://camo.githubusercontent.com/181c1705af97036dc3f3e16675893e90d673f2251f3932cbc131708a79e2454c/68747470733a2f2f636861726d6875622e696f2f6b61666b612d6b38732f62616467652e737667"
-                                        alt="CharmHub Badge"
-                                        data-canonical-src="https://charmhub.io/kafka-k8s/badge.svg"
-                                        style="max-width: 100%;"></a>
-                        <a href="https://github.com/canonical/kafka-k8s-operator/actions/workflows/release.yaml"><img
-                                        src="https://github.com/canonical/kafka-k8s-operator/actions/workflows/release.yaml/badge.svg"
-                                        alt="Release" style="max-width: 100%;"></a>
-                        <a
-                                href="https://github.com/canonical/kafka-k8s-operator/actions/workflows/ci.yaml?query=branch%3Amain"><img
-                                        src="https://github.com/canonical/kafka-k8s-operator/actions/workflows/ci.yaml/badge.svg?branch=main"
-                                        alt="Tests" style="max-width: 100%;"></a>
-                        <a href="https://app.readthedocs.com/projects/canonical-charmed-kafka-k8s/builds/?version__slug=4"
-                                rel="nofollow"><img
-                                        src="https://camo.githubusercontent.com/c394b8a13e1a664ea70e6cdb71a899af2be56f3f194d45dbbdd96c33be2e3758/68747470733a2f2f72656164746865646f63732e636f6d2f70726f6a656374732f63616e6f6e6963616c2d636861726d65642d6b61666b612d6b38732f62616467652f3f76657273696f6e3d34"
-                                        alt="Docs"
-                                        data-canonical-src="https://readthedocs.com/projects/canonical-charmed-kafka-k8s/badge/?version=4"
-                                        style="max-width: 100%;"></a>
-                </p>
+        <a href="/issues" class="card">
+            <i class="fas fa-bug"></i>
+            <h3>Issue Tracker</h3>
+            <span>Ticket backlog & bug tracking</span>
+        </a>
 
-                <div class="markdown-heading" dir="auto">
-                        <h2 tabindex="-1" class="heading-element" dir="auto">Apache ZooKeeper K8s charm</h2>
-                </div>
-                <p dir="auto"><a href="https://charmhub.io/zookeeper-k8s" rel="nofollow"><img
-                                        src="https://camo.githubusercontent.com/510f2c10e80d01671e5232aef4bfbb006fe90befd319d29c817d6a0d6acb10d7/68747470733a2f2f636861726d6875622e696f2f7a6f6f6b65657065722d6b38732f62616467652e737667"
-                                        alt="CharmHub Badge"
-                                        data-canonical-src="https://charmhub.io/zookeeper-k8s/badge.svg"
-                                        style="max-width: 100%;"></a>
-                        <a href="https://github.com/canonical/zookeeper-k8s-operator/actions/workflows/release.yaml"><img
-                                        src="https://github.com/canonical/zookeeper-k8s-operator/actions/workflows/release.yaml/badge.svg"
-                                        alt="Release" style="max-width: 100%;"></a>
-                        <a
-                                href="https://github.com/canonical/zookeeper-k8s-operator/actions/workflows/ci.yaml?query=branch%3Amain"><img
-                                        src="https://github.com/canonical/zookeeper-k8s-operator/actions/workflows/ci.yaml/badge.svg?branch=main"
-                                        alt="Tests" style="max-width: 100%;"></a>
-                </p>
+        <div class="card disabled">
+            <i class="fas fa-chart-pie"></i>
+            <h3>Analytics</h3>
+            <span>Coming Soon</span>
+        </div>
 
-                <div class="markdown-heading" dir="auto">
-                        <h2 tabindex="-1" class="heading-element" dir="auto">Charmed Karapace K8s Operator</h2>
-                </div>
-                <p dir="auto"><a href="https://charmhub.io/karapace-k8s" rel="nofollow"><img
-                                        src="https://camo.githubusercontent.com/77b0d0afb6a7e1ea7b38b9f51b32dba17d91dd1813235e962142bfe6437139b8/68747470733a2f2f636861726d6875622e696f2f6b617261706163652d6b38732f62616467652e737667"
-                                        alt="CharmHub Badge"
-                                        data-canonical-src="https://charmhub.io/karapace-k8s/badge.svg"
-                                        style="max-width: 100%;"></a>
-                        <a href="https://github.com/canonical/karapace-k8s-operator/actions/workflows/release.yaml"><img
-                                        src="https://github.com/canonical/karapace-k8s-operator/actions/workflows/release.yaml/badge.svg"
-                                        alt="Release" style="max-width: 100%;"></a>
-                        <a
-                                href="https://github.com/canonical/karapace-k8s-operator/actions/workflows/ci.yaml?query=branch%3Amain"><img
-                                        src="https://github.com/canonical/karapace-k8s-operator/actions/workflows/ci.yaml/badge.svg?branch=main"
-                                        alt="Tests" style="max-width: 100%;"></a>
-                        <a href="https://github.com/canonical/karapace-k8s-operator/actions/workflows/sync_docs.yaml"><img
-                                        src="https://github.com/canonical/karapace-k8s-operator/actions/workflows/sync_docs.yaml/badge.svg"
-                                        alt="Docs" style="max-width: 100%;"></a>
-                </p>
+        <div class="card disabled">
+            <i class="fas fa-server"></i>
+            <h3>Infrastructure</h3>
+            <span>Coming Soon</span>
+        </div>
 
-                <div class="markdown-heading" dir="auto">
-                        <h2 tabindex="-1" class="heading-element" dir="auto">Charmed Kafka Connect K8s Operator</h2>
-                </div>
-                <p dir="auto"><a href="https://charmhub.io/kafka-connect-k8s" rel="nofollow"><img
-                                        src="https://charmhub.io/kafka-connect-k8s/badge.svg"
-                                        alt="CharmHub Badge" data-canonical-src="https://charmhub.io/kafka-connect-k8s/badge.svg"
-                                        style="max-width: 100%;"></a>
-                        <a
-                                href="https://github.com/canonical/kafka-connect-k8s-operator/actions/workflows/release.yaml"><img
-                                        src="https://github.com/canonical/kafka-connect-k8s-operator/actions/workflows/release.yaml/badge.svg"
-                                        alt="Release" style="max-width: 100%;"></a>
-                        <a
-                                href="https://github.com/canonical/kafka-connect-k8s-operator/actions/workflows/ci.yaml?query=branch%3Amain"><img
-                                        src="https://github.com/canonical/kafka-connect-k8s-operator/actions/workflows/ci.yaml/badge.svg?branch=main"
-                                        alt="Tests" style="max-width: 100%;"></a>
-                </p>
+        <div class="card disabled">
+            <i class="fas fa-file-lines"></i>
+            <h3>Documentation</h3>
+            <span>Coming Soon</span>
+        </div>
 
-                <div class="markdown-heading" dir="auto">
-                        <h2 tabindex="-1" class="heading-element" dir="auto">Charmed Kafka UI K8s Operator</h2>
-                </div>
-                <p dir="auto"><a href="https://charmhub.io/kafka-ui-k8s" rel="nofollow"><img
-                                        src="https://charmhub.io/kafka-ui-k8s/badge.svg"
-                                        alt="CharmHub Badge" data-canonical-src="https://charmhub.io/kafka-ui-k8s/badge.svg"
-                                        style="max-width: 100%;"></a>
-                        <a
-                                href="https://github.com/canonical/kafka-ui-k8s-operator/actions/workflows/release.yaml"><img
-                                        src="https://github.com/canonical/kafka-ui-k8s-operator/actions/workflows/release.yaml/badge.svg"
-                                        alt="Release" style="max-width: 100%;"></a>
-                        <a
-                                href="https://github.com/canonical/kafka-ui-k8s-operator/actions/workflows/ci.yaml?query=branch%3Amain"><img
-                                        src="https://github.com/canonical/kafka-ui-k8s-operator/actions/workflows/ci.yaml/badge.svg?branch=main"
-                                        alt="Tests" style="max-width: 100%;"></a>
-                </p>
+        <div class="card disabled">
+            <i class="fas fa-sliders"></i>
+            <h3>System Settings</h3>
+            <span>Coming Soon</span>
+        </div>
+    </div>
 
 </body>
-
 </html>

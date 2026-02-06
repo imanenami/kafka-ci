@@ -3,160 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scheduled CI Status</title>
+    <title>Scheduled CI Status | Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
     <script src="./rawData.js"></script>
+    
     <style>
-        body { font-family: sans-serif; justify-content: center; padding: 20px; }
-        .container { 
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 500px;
-          width: 100%
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --accent-color: #2563eb; 
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+            --border-color: #e2e8f0;
+            --success: #059669;
+            --failure: #dc2626;
         }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #f8fafc 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* --- Navigation --- */
+        .home-nav {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+        }
+
+        .home-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--accent-color);
+            text-decoration: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .home-link:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-color);
+        }
+
+        header {
+            margin-top: 60px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        /* --- Content Layout --- */
+        .content-wrapper {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto 60px auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .card h2 i {
+            color: var(--accent-color);
+        }
+
+        /* --- Chart Styling --- */
         #chart {
-          width: 100%; 
-          max-width: 800px;
+            width: 100%;
+            min-height: 400px;
         }
+
+        /* --- Custom Grid.js overrides --- */
+        .gridjs-wrapper {
+            box-shadow: none !important;
+            border-radius: 8px !important;
+            border: 1px solid var(--border-color) !important;
+        }
+        
+        .gridjs-th {
+            background-color: #f8fafc !important;
+            color: var(--text-dim) !important;
+            text-transform: uppercase !important;
+            font-size: 0.75rem !important;
+            letter-spacing: 0.05em !important;
+        }
+
         .pie {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          background: conic-gradient(
-            red 0% 50%,
-            green 50% 100%
-          );
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin: 0 auto;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 1px var(--border-color);
+        }
+
+        @media (max-width: 600px) {
+            .home-nav { top: 15px; left: 15px; }
+            .card { padding: 15px; }
         }
     </style>
 </head>
 <body>
-    <h2>Scheduled CI Status</h2>
-    <div class="container">
-      <div id="chart"></div>
-    </div>
-    <script>
-        // Helper function to generate random data for the heatmap
-      
-        var options = {
-          series: rawChartData,
-          chart: {
-          height: 400,
-          type: 'heatmap',
-            events: {
-                dataPointSelection: function(event, chartContext, opts) {
-                // Access the selected data point's data
-                const selectedDataPoint = opts.w.config.series[opts.seriesIndex].data[opts.dataPointIndex];
-                const url = selectedDataPoint.url;
 
-                // Open the hyperlink in a new tab
-                if (url) {
-                    window.open(url, '_blank');
+    <nav class="home-nav">
+        <a href="index.html" class="home-link" title="Back to Home">
+            <i class="fas fa-home"></i>
+        </a>
+    </nav>
+
+    <header>
+        <h1>CI Performance Insights</h1>
+        <p style="color: var(--text-dim);">Scheduled workflows and repository health across the fleet</p>
+    </header>
+
+    <main class="content-wrapper">
+        
+        <div class="card">
+            <h2><i class="fas fa-calendar-alt"></i> Scheduled CI Status</h2>
+            <div id="chart"></div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-layer-group"></i> Workflows</h2>
+            <div id="grid-table"></div>
+        </div>
+
+    </main>
+
+    <script>    
+        // ApexCharts Heatmap Configuration
+        var options = {
+            series: rawChartData,
+            chart: {
+                height: 400,
+                type: 'heatmap',
+                fontFamily: 'Inter, sans-serif',
+                toolbar: { show: false },
+                events: {
+                    dataPointSelection: function(event, chartContext, opts) {
+                        const selectedDataPoint = opts.w.config.series[opts.seriesIndex].data[opts.dataPointIndex];
+                        const url = selectedDataPoint.url;
+                        if (url) window.open(url, '_blank');
+                    }
                 }
+            },
+            plotOptions: {
+                heatmap: {
+                    shadeIntensity: 0.5,
+                    radius: 4,
+                    useFillColorAsStroke: false,
+                    colorScale: {
+                        ranges: [
+                            { from: 0, to: 50, name: 'Failure', color: '#ef4444' },
+                            { from: 51, to: 100, name: 'Success', color: '#10b981' }
+                        ]
+                    }
+                }
+            },
+            dataLabels: { enabled: false },
+            stroke: { width: 2, colors: ['#fff'] },
+            tooltip: {
+                y: {
+                    formatter: function(value) {
+                        return value == 100 ? "Status: Success" : "Status: Failure"
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: { fontSize: '12px', fontWeight: 500 }
                 }
             }
-        },
-        plotOptions: {
-          heatmap: {
-            shadeIntensity: 0.5,
-            radius: 0,
-            useFillColorAsStroke: false,
-            colorScale: {
-              ranges: [{
-                  from: 0,
-                  to: 50,
-                  name: 'failure',
-                  color: '#FF0000'
-                },
-                {
-                  from: 50,
-                  to: 100,
-                  name: 'success',
-                  color: '#006400'
-                }
-              ]
-            }
-          }
-        },
-        dataLabels: {
-          enabled: false
-        },
-        stroke: {
-          width: 3
-        },
-        tooltip: {
-            y: {
-                formatter: function(value) {
-                    return value == 100 ? "success" : "failure"
-                }
-            }
-        },
-        yaxis: {
-            labels: {
-                style: {
-                    fontSize: '10pt'
-                }
-            }
-        }
         };
 
         var chart = new ApexCharts(document.querySelector("#chart"), options);
         chart.render();
 
-    </script>
+        // Grid.js Configuration
+        async function initGrid() {
+            const gridData = rawGridData.map(d => [
+                d.repo, 
+                d.build, 
+                d.release, 
+                d.jubilant
+            ]);
 
-    <div id="wrapper">
-        <h2>Workflow Version Across Our Repos</h2>
-        <div id="grid-table"></div>
-    </div>
-
-    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
-    <script>
-      async function initGrid() {
-
-        const gridData = rawGridData.map(d => [
-            d.repo, 
-            d.build, 
-            d.release, 
-            d.tag,
-            d.jubilant
-        ]);
-
-        // 3. Render the Grid
-        new gridjs.Grid({
-            columns: [
-              "Repository",
-              "CI",
-              "Release",
-              "Tag",
-              {
-                name: "%Jubilant",
-                formatter: function(cell) {
-                  parts = cell.split(":");
-                  g = parseInt(parts[0])
-                  r = parseInt(parts[1]);
-                  return gridjs.html(
-                    '<div title="'+g+'%" class="pie" style="background: conic-gradient(green 0% '+g+'%, red '+g+'% 100%);"></div>'
-                  );
+            new gridjs.Grid({
+                columns: [
+                    "Repository",
+                    { name: "CI", sort: true },
+                    "Release",
+                    {
+                        name: "%Jubilant",
+                        formatter: (cell) => {
+                            const g = parseInt(cell.split(":")[0]);
+                            return gridjs.html(
+                                `<div title="${g}% Success" class="pie" style="background: conic-gradient(#10b981 0% ${g}%, #ef4444 ${g}% 100%);"></div>`
+                            );
+                        }
+                    }
+                ],
+                data: gridData,
+                search: true,
+                sort: true,
+                pagination: { limit: 10 },
+                style: {
+                    th: { 'text-align': 'left' },
+                    td: { 'font-size': '14px' }
                 }
-              }
-            ],
-            data: gridData,
-            search: true,
-            sort: true,
-            pagination: {
-                limit: 10
-            },
-            style: {
-                table: { border: '1px solid #ccc' },
-                th: { 'background-color': '#f1f1f1', color: '#333', 'text-align': 'center' }
-            }
-        }).render(document.getElementById("grid-table"));
-    }
+            }).render(document.getElementById("grid-table"));
+        }
 
-    initGrid();
+        initGrid();
     </script>
-
 </body>
 </html>

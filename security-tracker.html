@@ -7,6 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/4.1.0/cdn.min.js"></script>
     <script src="vulnData.js"></script>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -16,7 +18,7 @@
             justify-content: center;
         }
 
-        .container {
+        .gridContainer {
             width: 100%;
             max-width: 1200px;
         }
@@ -41,9 +43,16 @@
     </style>
 </head>
 <body>
+    <nav class="home-nav">
+        <a href="index.html" class="home-link" title="Back to Home">
+            <i class="fas fa-home"></i>
+        </a>
+    </nav>
 
-    <div class="container">
-        <h1>Security Tracker</h1>
+    <div class="gridContainer">
+        <header>
+            <h1>Security Tracker</h1>
+        </header>
         <h3 id="updated"></h3>
         <div id="myGrid" class="ag-theme-alpine"></div>
     </div>
@@ -77,6 +86,7 @@
         // Initialize the Grid
         const gridDiv = document.querySelector('#myGrid');
         const gridApi = agGrid.createGrid(gridDiv, gridOptions);
+        // Last update
         const updatedStr = dateFns.formatDistance(Date.parse(updatedAt), Date(), { addSuffix: true });
         document.getElementById("updated").innerHTML = "Last Update: " + updatedStr;
     </script>
