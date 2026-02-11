@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DPE Kafka | Release Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="releaseData.js"></script>
+    <style>
+    .table-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    justify-items: center;
+    }
+
+    @media (min-width: 960px) {
+    .table-grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+    }
+    .version-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 450px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #2c3e50;
+        border: 1px solid #d1d9e6;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .version-table td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid #eef2f7;
+    }
+
+    .header-main {
+        background-color: #0077b6;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+    }
+
+    .header-sub {
+        background-color: #f0f7ff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        color: #5b7da1;
+    }
+
+    .channel-row {
+        background-color: #e1effe;
+        font-weight: bold;
+        color: #005a8d;
+        font-size: 0.95rem;
+    }
+
+    .version-cell {
+        background-color: #ffffff;
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+    }
+
+    .kafka-table tr:last-child td {
+        border-bottom: none;
+    }
+    </style>
+</head>
+<body>
+<nav class="home-nav">
+    <a href="index.html" class="home-link" title="Back to Home">
+        <i class="fas fa-home"></i>
+    </a>
+</nav>
+<header>
+    <h1>DPE Kafka Charm Releases</h1>
+</header>
+<div class="table-grid" id="kafka-table-container">
+  </div>
+<script>
+function generateTable(charm, data) {
+  const container = document.getElementById('kafka-table-container');
+  
+  let tableHtml = `
+    <table class="version-table">
+      <thead>
+        <tr><td class="header-main" colspan="2">${charm}</td></tr>
+        <tr class="header-sub"><td>VM</td><td>K8S</td></tr>
+      </thead>
+      <tbody>
+  `;
+
+  data.forEach(item => {
+    tableHtml += `
+      <tr><td class="channel-row" colspan="2">${item.channel}</td></tr>
+      <tr class="version-cell">
+        <td>${item.versions.vm}</td>
+        <td>${item.versions.k8s}</td>
+      </tr>
+    `;
+  });
+
+  tableHtml += `</tbody></table>`;
+  container.innerHTML += tableHtml;
+}
+
+// Call the function to render
+for(const [charm, relData] of Object.entries(releaseData)) {
+    generateTable(charm, relData);
+}
+</script>
+
+</body>
+</html>
