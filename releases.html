@@ -9,17 +9,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/4.1.0/cdn.min.js"></script>
     <style>
     .table-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    justify-items: center;
-    }
-
-    @media (min-width: 960px) {
-    .table-grid {
-        grid-template-columns: repeat(1, 1fr);
-    }
+        display: grid;
+        gap: 20px;
+        padding: 20px;
+        grid-template-columns: 1fr;
+        justify-items: center;
     }
     .version-table {
         border-collapse: separate;
@@ -62,10 +56,55 @@
         font-size: 0.95rem;
     }
 
-    .version-cell {
-        background-color: #ffffff;
-        font-family: 'Courier New', Courier, monospace;
-        font-weight: bold;
+    .version-cell td {
+    max-width: 75px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative; 
+    cursor: help;
+    }
+
+    .version-cell td::after {
+    content: attr(data-fulltext); /* Pulls text from a data attribute */
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background-color: #2c3e50;
+    color: #fff;
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    white-space: normal;
+    width: max-content;
+    max-width: 200px;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .version-cell td::before {
+    content: '';
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #2c3e50;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    }
+
+    /* 4. Show on Hover */
+    .version-cell td:hover::after,
+    .version-cell td:hover::before {
+    opacity: 1;
+    visibility: visible;
     }
 
     .kafka-table tr:last-child td {
@@ -102,8 +141,8 @@ function generateTable(charm, data) {
     tableHtml += `
       <tr><td class="channel-row" colspan="2">${item.channel}</td></tr>
       <tr class="version-cell">
-        <td>${item.versions.vm}</td>
-        <td>${item.versions.k8s}</td>
+        <td width="200px" data-fulltext="${item.versions.vm}">${item.versions.vm}</td>
+        <td width="200px" data-fulltext="${item.versions.k8s}">${item.versions.k8s}</td>
       </tr>
     `;
   });
