@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="static/style.css">
     <script src="releaseData.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/4.1.0/cdn.min.js"></script>
     <style>
     .table-grid {
     display: grid;
@@ -80,6 +81,7 @@
 </nav>
 <header>
     <h1>DPE Kafka Charm Releases</h1>
+    <h3 id="updated">Last update: </h3>
 </header>
 <div class="table-grid" id="kafka-table-container">
   </div>
@@ -114,6 +116,8 @@ function generateTable(charm, data) {
 for(const [charm, relData] of Object.entries(releaseData)) {
     generateTable(charm, relData);
 }
+const updatedStr = dateFns.formatDistance(Date.parse(updatedAt), Date(), { addSuffix: true });
+document.getElementById("updated").innerHTML = "Last Update: " + updatedStr;
 </script>
 
 </body>
