@@ -84,7 +84,7 @@
 
     const hot = new Handsontable(container, {
         data: [],
-        colHeaders: ['Repository', 'Title', 'Final', 'Open For (Days)', 'User', 'Notes (offline)'],
+        colHeaders: ['Repository', 'Title', 'Final', 'Open (d)', 'Updated (d)', 'User', 'Notes (offline)'],
         height: 'auto',
         width: '100%',
         licenseKey: 'non-commercial-and-evaluation', // Required for free version
@@ -92,13 +92,13 @@
         // Column specific settings
         columns: [
             { type: 'text', readOnly: true },
-            { type: 'text', width: 250, renderer: "html", readOnly: true },
+            { type: 'text', width: 300, renderer: "html", readOnly: true },
             { type: 'dropdown', source: ['Yes', 'No'], readOnly: true },
-            { type: 'numeric', readOnly: true },
+            { type: 'numeric', width: 100, readOnly: true },
+            { type: 'numeric', width: 100, readOnly: true },
             { type: 'text', readOnly: true },
             { type: 'text' }
         ],
-
         dropdownMenu: true,
         filters: true,
         columnSorting: true,
@@ -123,11 +123,20 @@
                 item.repo,
                 marked.parse(item.title).replace('href=', 'target="_blank" href=') || 'Untitled',
                 item.draft ? 'No' : 'Yes',
-                Math.floor((Date.now() - Date.parse(item.created)) / 3600000 / 24),
+                item.created_days,
+                item.updated_days,
                 item.user
             ]));
 
             hot.loadData(mappedData);
+
+            const columnSorting = hot.getPlugin('columnSorting');
+            columnSorting.sort(
+                {
+                    column: 4,
+                    sortOrder: 'asc',
+                }
+            );
             
             loaderEl.style.display = 'none';
             statusEl.innerHTML = `<span style="color: #10b981;">● Live</span>`;
