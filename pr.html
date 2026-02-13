@@ -2,35 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DPE Kafka | Open PR Tracker</title>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="static/style.css">
+
     <style>
         body {
-            font-family: sans-serif;
-            padding: 20px;
-            background-color: #f4f7f6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            padding: 40px;
+            background-color: #f8fafc;
         }
-        select {
-            min-width: 50px;
-            max-width: 125px
-        }
+
         .tableContainer {
+            max-width: 1100px;
+            margin: 0 auto;
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin-top: 50px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
         }
-        .spinnerContainer {
+
+        .header-section {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            height: 100vh;
-            width: 100%;
-        }
-        header {
             margin-bottom: 20px;
+        }
+
+        h2 { color: #1e293b; margin: 0; }
+
+        #prTable {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Loading Spinner */
+        #loader {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+        }
+
+        /* Modernizing Handsontable Headers */
+        .handsontable th {
+            background-color: #f1f5f9 !important;
+            font-weight: 600 !important;
+            color: #475569 !important;
+            border: none !important;
         }
     </style>
 </head>
@@ -40,128 +63,84 @@
         <i class="fas fa-home"></i>
     </a>
 </nav>
-<header>
-    <h1>Open PR Tracker</h1>
-</header>
-<div id="loadingSpinner" class="spinnerContainer">
-    <img src="static/img/loading-image.gif" alt="Loading..." width="128px" height="128px">
-</div>
-<div id="tableContainer" class="tableContainer" style="display:none;">
-    <table id="repoTable" class="display" style="width:100%">
-        <thead>
-            <tr>
-                <th>Repository</th>
-                <th>Title</th>
-                <th>Final</th>
-                <th>Open For (Days)</th>
-                <th>User</th>
-            </tr>
-            <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+
+<div class="tableContainer">
+    <div class="header-section">
+        <h2>Open PR Tracker</h2>
+        <div id="status">Connecting...</div>
+    </div>
+    
+    <div id="loader">Fetching latest data from API...</div>
+    <div id="prTable"></div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/colresizable/1.6.0/colResizable-1.6.min.js"></script>
+
 <script>
-clearFilters = 'ALL';
-$(document).ready(function() {
-    $('#repoTable').DataTable({
-        ajax: "https://gnx6ywx8q5.execute-api.eu-north-1.amazonaws.com/main/open-prs",
+    const container = document.querySelector('#prTable');
+    const statusEl = document.querySelector('#status');
+    const loaderEl = document.querySelector('#loader');
+
+    const hot = new Handsontable(container, {
+        data: [],
+        colHeaders: ['Repository', 'Title', 'Final', 'Open For (Days)', 'User', 'Notes (offline)'],
+        height: 'auto',
+        width: '100%',
+        licenseKey: 'non-commercial-and-evaluation', // Required for free version
+        
+        // Column specific settings
         columns: [
-            { data: 'repo', width: '15%'},
-            { 
-                data: 'title',
-                render: function(data) {
-                    return marked.parse(data).replace('href=', 'target="_blank" href=')
-                },
-                width: '50%'
-            },
-            {
-                data: "draft",
-                width: "5%",
-                render: function (data, type, row) {
-                    if (data === false) {
-                    return '<span style="color:green;">✅</span>';
-                    } else {
-                    return '<span style="color:red;">📝</span>';
-                    }
-                }
-            },
-            {
-                data: 'created',
-                width: '15%',
-                render: function(data) {
-                    return Math.floor((Date.now() - Date.parse(data)) / 3600000 / 24)
-                }
-            },
-            { data: 'user', width: '15%' }
+            { type: 'text', readOnly: true },
+            { type: 'text', width: 250, renderer: "html", readOnly: true },
+            { type: 'dropdown', source: ['Yes', 'No'], readOnly: true },
+            { type: 'numeric', readOnly: true },
+            { type: 'text', readOnly: true },
+            { type: 'text' }
         ],
-        responsive: true,
-        pageLength: 10,
-        order: [[3, 'desc']], // Sort by Create Time descending
-        autoWidth: false,
-        initComplete: function () {
-            $('#loadingSpinner').hide(); // Hide the spinner
-            $('#tableContainer').show(); // Show the table container
-            this.api()
-                .columns()
-                .every(function () {
-                    let column = this;
-                    // Skip filtering for title & open for
-                    if (column.index() != 1 && column.index() != 3) {
-                        // Create select element
-                        let select = document.createElement('select');
-                        select.add(new Option(clearFilters));
-                        $('#repoTable thead tr:eq(1) th:eq('+column.index()+')').empty().append(select);
 
-                        // Apply listener for user change in value
-                        select.addEventListener('change', function () {
-                            if (select.value == clearFilters) {
-                                column.search('').draw();
-                            } else {
-                                column
-                                    .search("^" + select.value + "$", true, false)
-                                    .draw();
-                            }
-                        });
+        dropdownMenu: true,
+        filters: true,
+        columnSorting: true,
+        rowHeaders: true,
+        stretchH: 'all',
+        className: 'htCenter htMiddle',
+        manualColumnResize: true,
+        autoWrapRow: true,
+        autoWrapCol: true
+    });
 
-                        // Add list of options
-                        if (column.index() == 2) {
-                            select.add(new Option("✅"));
-                            select.add(new Option("📝"))
-                        } else {
-                            column
-                                .data()
-                                .unique()
-                                .sort()
-                                .each(function (d, j) {
-                                    select.add(new Option(d));
-                                });
-                        }
-                    }
-                });
+    async function fetchData() {
+        const apiUrl = 'https://gnx6ywx8q5.execute-api.eu-north-1.amazonaws.com/main/open-prs';
+        
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            const rawData = await response.json();
+
+            const mappedData = rawData.data.map(item => ([
+                item.repo,
+                marked.parse(item.title).replace('href=', 'target="_blank" href=') || 'Untitled',
+                item.draft ? 'No' : 'Yes',
+                Math.floor((Date.now() - Date.parse(item.created)) / 3600000 / 24),
+                item.user
+            ]));
+
+            hot.loadData(mappedData);
+            
+            loaderEl.style.display = 'none';
+            statusEl.innerHTML = `<span style="color: #10b981;">● Live</span>`;
+
+        } catch (error) {
+            console.error('Fetch Error:', error);
+            loaderEl.innerText = 'Failed to load data. Please check CORS settings or API status.';
+            statusEl.innerHTML = `<span style="color: #ef4444;">● Error</span>`;
         }
-    });
-});
+    }
 
-$("#repoTable").colResizable({
-        liveDrag: true,        // Columns resize as you drag
-        gripInnerHtml: "<div class='grip'></div>", 
-        draggingClass: "dragging", 
-        resizeMode: 'fit'      // 'fit' keeps table width constant, 'flex' allows overflow
-    });
+    fetchData();
 </script>
-</body>
 
+</body>
 </html>
