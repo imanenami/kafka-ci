@@ -8,6 +8,7 @@
     <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/4.1.0/cdn.min.js"></script>
     <script src="./rawData.js"></script>
     
     <style>
@@ -151,6 +152,8 @@
 
     <header>
         <h1>CI Performance Insights</h1>
+                    <h3 id="updated"></h3>
+
     </header>
 
     <main class="content-wrapper">
@@ -279,6 +282,8 @@
         }
 
         initGrid();
+        const updatedStr = dateFns.formatDistance(Date.parse(updatedAt), Date(), { addSuffix: true });
+        document.getElementById("updated").innerHTML = "Last Update: " + updatedStr;
     </script>
 </body>
 </html>
