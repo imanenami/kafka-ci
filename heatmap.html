@@ -214,18 +214,21 @@
 
         // Grid.js Configuration
         async function initGrid() {
-            const gridData = rawGridData.map(d => [
-                d.repo, 
-                d.build, 
-                d.release, 
+            sortedData = rawGridData.sort((a, b) => a.repo.localeCompare(b.repo));
+            const gridData = sortedData.map(d => [
+                d.repo,
+                d.build,
+                d.release,
+                d.rf,
                 d.jubilant
             ]);
 
             new gridjs.Grid({
                 columns: [
                     "Repository",
-                    { name: "CI", sort: true },
+                    "CI",
                     "Release",
+                    "Retry Factor",
                     {
                         name: "%Jubilant",
                         formatter: (cell) => {
