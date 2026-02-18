@@ -240,18 +240,18 @@
                     {
                         name: "CI",
                         formatter: (cell) => {
-                            const g = parseInt(cell.split(":")[0]);
+                            val = cell == undefined ? "---" : cell;
                             return gridjs.html(
-                                `<span class="smaller-font">${cell}</span>`
+                                `<span class="smaller-font">${val}</span>`
                             );
                         }
                     },
                     {
                         name: "Release",
                         formatter: (cell) => {
-                            const g = parseInt(cell.split(":")[0]);
+                            val = cell == undefined ? "---" : cell;
                             return gridjs.html(
-                                `<span class="smaller-font">${cell}</span>`
+                                `<span class="smaller-font">${val}</span>`
                             );
                         }
                     },
@@ -265,7 +265,7 @@
                         formatter: (cell) => {
                             const g = parseInt(cell.split(":")[0]);
                             return gridjs.html(
-                                `<div title="${g}% Success" class="pie" style="background: conic-gradient(#10b981 0% ${g}%, #ef4444 ${g}% 100%);"></div>`
+                                `<div title="${g}% Jubilant" class="pie" style="background: conic-gradient(#10b981 0% ${g}%, #ef4444 ${g}% 100%);"></div>`
                             );
                         }
                     }
