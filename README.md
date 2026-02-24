@@ -1,4 +1,4 @@
-## What is this?
+# What is this?
 
 This is the frontend for a [handy tool](https://imanenami.github.io/kafka-ci) which I wrote to help me monitor DPE Kafka DevSecOps pipelines.
 
