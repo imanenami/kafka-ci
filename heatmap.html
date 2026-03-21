@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DPE Kafka | CI Tracker</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
@@ -105,7 +106,7 @@
         /* --- Chart Styling --- */
         #chart {
             width: 100%;
-            min-height: 400px;
+            min-height: 500px;
         }
 
         /* --- Custom Grid.js overrides --- */
@@ -148,6 +149,18 @@
         <a href="index.html" class="home-link" title="Back to Home">
             <i class="fas fa-home"></i>
         </a>
+        <div class="menu-container">
+            <a class="home-link" title="Open Options" id="menuTrigger">
+                <img id="productLogo" width="32px" height="32px" src="static/img/kafka.png" alt="Kafka Logo">
+            </a>
+            
+            <ul class="context-menu" id="contextMenu">
+                <li><a href="#kafka" onclick="localStorage.setItem('product', 'kafka')">Kafka</a></li>
+                <li><a href="#postgres" onclick="localStorage.setItem('product', 'postgresql')">PostgreSQL</a></li>
+                <li><a href="#mysql" onclick="localStorage.setItem('product', 'mysql')">MySQL</a></li>
+                <li><a href="#opensearch" onclick="localStorage.setItem('product', 'opensearch')">OpenSearch</a></li>
+            </ul>
+        </div>
     </nav>
 
     <header>
@@ -174,7 +187,7 @@
         var options = {
             series: rawChartData,
             chart: {
-                height: 400,
+                height: 500,
                 type: 'heatmap',
                 fontFamily: 'Inter, sans-serif',
                 toolbar: { show: false },
@@ -283,6 +296,30 @@
         initGrid();
         const updatedStr = dateFns.formatDistance(Date.parse(updatedAt), Date(), { addSuffix: true });
         document.getElementById("updated").innerHTML = "Last Update: " + updatedStr;
+    </script>
+    <script>
+        const trigger = document.getElementById('menuTrigger');
+        const menu = document.getElementById('contextMenu');
+
+        trigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            menu.classList.toggle('active');
+            setProduct();
+        });
+
+        window.addEventListener('click', function(e) {
+            if (!trigger.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('active');
+            }
+            setProduct();
+        });
+
+        function setProduct() {
+            let product = localStorage.getItem('product') || 'kafka';
+            document.getElementById("productLogo").setAttribute('src', `static/img/${product}.png`);
+        }
+
+        setProduct();
     </script>
 </body>
 </html>
