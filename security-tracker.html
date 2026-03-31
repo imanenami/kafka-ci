@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/4.1.0/cdn.min.js"></script>
     <script src="js/vulnData.js"></script>
+    <script src="js/utils.js"></script>
     <link rel="stylesheet" href="static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -47,6 +48,19 @@
         <a href="index.html" class="home-link" title="Back to Home">
             <i class="fas fa-home"></i>
         </a>
+        <div class="menu-container">
+            <a class="home-link" title="Open Options" id="menuTrigger">
+                <img id="productLogo" width="32px" height="32px" src="static/img/kafka.png" alt="Kafka Logo">
+            </a>
+            
+            <ul class="context-menu" id="contextMenu">
+                <li><a href="#kafka" onclick="localStorage.setItem('product', 'kafka')">Kafka</a></li>
+                <li><a href="#postgres" onclick="localStorage.setItem('product', 'postgresql')">PostgreSQL</a></li>
+                <li><a href="#mysql" onclick="localStorage.setItem('product', 'mysql')">MySQL</a></li>
+                <li><a href="#opensearch" onclick="localStorage.setItem('product', 'opensearch')">OpenSearch</a></li>
+            </ul>
+        </div>
+
     </nav>
 
     <div class="gridContainer">
@@ -89,6 +103,11 @@
         // Last update
         const updatedStr = dateFns.formatDistance(Date.parse(updatedAt), Date(), { addSuffix: true });
         document.getElementById("updated").innerHTML = "Last Update: " + updatedStr;
+        function productChangedCallback(product) {
+            filteredData = rawVulnData.filter((x) => x.Group == product);
+            gridApi.setGridOption('rowData', filteredData);
+	}
     </script>
+    <script src="js/productContext.js"></script>
 </body>
 </html>

@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DPE Kafka | CI Tracker</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
@@ -33,32 +34,6 @@
         }
 
         /* --- Navigation --- */
-        .home-nav {
-            position: absolute;
-            top: 25px;
-            left: 25px;
-        }
-
-        .home-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 45px;
-            height: 45px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--accent-color);
-            text-decoration: none;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            transition: all 0.2s ease;
-        }
-
-        .home-link:hover {
-            transform: scale(1.05);
-            border-color: var(--accent-color);
-        }
-
         header {
             margin-top: 60px;
             text-align: center;
@@ -105,7 +80,7 @@
         /* --- Chart Styling --- */
         #chart {
             width: 100%;
-            min-height: 400px;
+            min-height: 500px;
         }
 
         /* --- Custom Grid.js overrides --- */
@@ -148,6 +123,18 @@
         <a href="index.html" class="home-link" title="Back to Home">
             <i class="fas fa-home"></i>
         </a>
+        <div class="menu-container">
+            <a class="home-link" title="Open Options" id="menuTrigger">
+                <img id="productLogo" width="32px" height="32px" src="static/img/kafka.png" alt="Kafka Logo">
+            </a>
+            
+            <ul class="context-menu" id="contextMenu">
+                <li><a href="#kafka" onclick="localStorage.setItem('product', 'kafka')">Kafka</a></li>
+                <li><a href="#postgres" onclick="localStorage.setItem('product', 'postgresql')">PostgreSQL</a></li>
+                <li><a href="#mysql" onclick="localStorage.setItem('product', 'mysql')">MySQL</a></li>
+                <li><a href="#opensearch" onclick="localStorage.setItem('product', 'opensearch')">OpenSearch</a></li>
+            </ul>
+        </div>
     </nav>
 
     <header>
@@ -169,12 +156,12 @@
 
     </main>
 
-    <script>    
+    <script>
         // ApexCharts Heatmap Configuration
         var options = {
             series: rawChartData,
             chart: {
-                height: 400,
+                height: 500,
                 type: 'heatmap',
                 fontFamily: 'Inter, sans-serif',
                 toolbar: { show: false },
@@ -218,18 +205,21 @@
         var chart = new ApexCharts(document.querySelector("#chart"), options);
         chart.render();
 
-        // Grid.js Configuration
-        async function initGrid() {
-            sortedData = rawGridData.sort((a, b) => a.repo.localeCompare(b.repo));
-            const gridData = sortedData.map(d => [
+        function prepareGridData(data) {
+            sortedData = data.sort((a, b) => a.repo.localeCompare(b.repo));
+            return sortedData.map(d => [
                 d.repo,
                 d.build,
                 d.release,
                 d.rf,
                 d.jubilant
             ]);
+	    }
 
-            new gridjs.Grid({
+        // Grid.js Configuration
+        async function initGrid(data) {
+            gridData = prepareGridData(data);
+            return new gridjs.Grid({
                 columns: [
                     {
                         name: "Repository",
@@ -280,9 +270,18 @@
             }).render(document.getElementById("grid-table"));
         }
 
-        initGrid();
+        function productChangedCallback(product) {
+            filteredChartData = rawChartData.filter((x) => x.group == product);
+            chart.updateSeries(filteredChartData);
+            chart.updateOptions({chart: {height: 200 + 40 * filteredChartData.length}});
+            filteredGridData = prepareGridData(rawGridData.filter((x) => x.group == product));
+            gridPromise.then(g => {g.updateConfig({data: filteredGridData}).forceRender()});
+        }
+
+	    gridPromise = initGrid(rawGridData);
         const updatedStr = dateFns.formatDistance(Date.parse(updatedAt), Date(), { addSuffix: true });
         document.getElementById("updated").innerHTML = "Last Update: " + updatedStr;
     </script>
+    <script src="js/productContext.js"></script>
 </body>
 </html>
