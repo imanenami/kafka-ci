@@ -124,7 +124,7 @@
     });
 
     async function fetchData() {
-        const apiUrl = 'http://135.181.138.176:3000/api/v1/github/prs?group=' + selectedProduct;
+        const apiUrl = 'https://intellinet.dev/imon/prs?group=' + selectedProduct;
         
         try {
             const response = await fetch(apiUrl);
