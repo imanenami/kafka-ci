@@ -58,7 +58,7 @@
         `;
 
         data.forEach(item => {
-            ch_badge_svg = typeof data.channel == "undefined" ? `badge.svg` : `badge.svg?channel=${data.channel}`;
+            ch_badge_svg = typeof item.channel == "undefined" ? `badge.svg` : `badge.svg?channel=${item.channel}`;
             html += `
             <div class="card">
                 <h3>${betterTitle(item.name)}</h3>
