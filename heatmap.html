@@ -34,32 +34,6 @@
         }
 
         /* --- Navigation --- */
-        .home-nav {
-            position: absolute;
-            top: 25px;
-            left: 25px;
-        }
-
-        .home-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 45px;
-            height: 45px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--accent-color);
-            text-decoration: none;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            transition: all 0.2s ease;
-        }
-
-        .home-link:hover {
-            transform: scale(1.05);
-            border-color: var(--accent-color);
-        }
-
         header {
             margin-top: 60px;
             text-align: center;
@@ -182,7 +156,7 @@
 
     </main>
 
-    <script>    
+    <script>
         // ApexCharts Heatmap Configuration
         var options = {
             series: rawChartData,
@@ -231,18 +205,21 @@
         var chart = new ApexCharts(document.querySelector("#chart"), options);
         chart.render();
 
-        // Grid.js Configuration
-        async function initGrid() {
-            sortedData = rawGridData.sort((a, b) => a.repo.localeCompare(b.repo));
-            const gridData = sortedData.map(d => [
+        function prepareGridData(data) {
+            sortedData = data.sort((a, b) => a.repo.localeCompare(b.repo));
+            return sortedData.map(d => [
                 d.repo,
                 d.build,
                 d.release,
                 d.rf,
                 d.jubilant
             ]);
+	    }
 
-            new gridjs.Grid({
+        // Grid.js Configuration
+        async function initGrid(data) {
+            gridData = prepareGridData(data);
+            return new gridjs.Grid({
                 columns: [
                     {
                         name: "Repository",
@@ -293,33 +270,18 @@
             }).render(document.getElementById("grid-table"));
         }
 
-        initGrid();
+        function productChangedCallback(product) {
+            filteredChartData = rawChartData.filter((x) => x.group == product);
+            chart.updateSeries(filteredChartData);
+            chart.updateOptions({chart: {height: 200 + 40 * filteredChartData.length}});
+            filteredGridData = prepareGridData(rawGridData.filter((x) => x.group == product));
+            gridPromise.then(g => {g.updateConfig({data: filteredGridData}).forceRender()});
+        }
+
+	    gridPromise = initGrid(rawGridData);
         const updatedStr = dateFns.formatDistance(Date.parse(updatedAt), Date(), { addSuffix: true });
         document.getElementById("updated").innerHTML = "Last Update: " + updatedStr;
     </script>
-    <script>
-        const trigger = document.getElementById('menuTrigger');
-        const menu = document.getElementById('contextMenu');
-
-        trigger.addEventListener('click', function(e) {
-            e.preventDefault();
-            menu.classList.toggle('active');
-            setProduct();
-        });
-
-        window.addEventListener('click', function(e) {
-            if (!trigger.contains(e.target) && !menu.contains(e.target)) {
-                menu.classList.remove('active');
-            }
-            setProduct();
-        });
-
-        function setProduct() {
-            let product = localStorage.getItem('product') || 'kafka';
-            document.getElementById("productLogo").setAttribute('src', `static/img/${product}.png`);
-        }
-
-        setProduct();
-    </script>
+    <script src="js/productContext.js"></script>
 </body>
 </html>

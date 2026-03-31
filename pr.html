@@ -62,6 +62,18 @@
     <a href="index.html" class="home-link" title="Back to Home">
         <i class="fas fa-home"></i>
     </a>
+    <div class="menu-container">
+        <a class="home-link" title="Open Options" id="menuTrigger">
+            <img id="productLogo" width="32px" height="32px" src="static/img/kafka.png" alt="Kafka Logo">
+        </a>
+        
+        <ul class="context-menu" id="contextMenu">
+            <li><a href="#kafka" onclick="localStorage.setItem('product', 'kafka')">Kafka</a></li>
+            <li><a href="#postgres" onclick="localStorage.setItem('product', 'postgresql')">PostgreSQL</a></li>
+            <li><a href="#mysql" onclick="localStorage.setItem('product', 'mysql')">MySQL</a></li>
+            <li><a href="#opensearch" onclick="localStorage.setItem('product', 'opensearch')">OpenSearch</a></li>
+        </ul>
+    </div>
 </nav>
 
 <div class="tableContainer">
@@ -76,6 +88,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
+<script src="js/productContext.js"></script>
 
 <script>
     const container = document.querySelector('#prTable');
@@ -111,7 +124,7 @@
     });
 
     async function fetchData() {
-        const apiUrl = 'https://intellinet.dev/imon/prs';
+        const apiUrl = 'http://135.181.138.176:3000/api/v1/github/prs?group=' + selectedProduct;
         
         try {
             const response = await fetch(apiUrl);
@@ -148,6 +161,10 @@
         }
     }
 
+    function productChangedCallback() {
+        loaderEl.style.display = 'block';
+        fetchData();
+    }
     fetchData();
 </script>
 
