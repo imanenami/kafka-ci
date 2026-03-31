@@ -58,11 +58,12 @@
         `;
 
         data.forEach(item => {
+            ch_badge_svg = typeof data.channel == "undefined" ? `badge.svg` : `badge.svg?channel=${data.channel}`;
             html += `
             <div class="card">
                 <h3>${betterTitle(item.name)}</h3>
                 <div class="badge-container">
-                    <a href="https://charmhub.io/${item.name}"><img src="https://charmhub.io/${item.name}/badge.svg" alt="CharmHub"></a>
+                    <a href="https://charmhub.io/${item.name}"><img src="https://charmhub.io/${item.name}/${ch_badge_svg}" alt="CharmHub"></a>
                     <a href="${item.repo}/actions/workflows/release.yaml"><img src="${item.repo}/actions/workflows/release.yaml/badge.svg" alt="Release"></a>
                     <a href="${item.repo}/actions/workflows/ci.yaml?query=branch%3Amain"><img src="${item.repo}/actions/workflows/ci.yaml/badge.svg?branch=main" alt="Tests"></a>
                 </div>

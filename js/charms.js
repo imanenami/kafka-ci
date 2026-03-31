@@ -33,7 +33,8 @@ charms = [
         "name": "cassandra",
         "group": "kafka",
         "repo": "https://github.com/canonical/cassandra-operator",
-        "substrate": "machine"
+        "substrate": "machine",
+        "channel": "5/edge"
     },
     {
         "name": "postgresql",
