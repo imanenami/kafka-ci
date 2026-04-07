@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="static/style.css">
+    <script src="js/utils.js"></script>
 
     <style>
         body {
@@ -68,10 +69,6 @@
         </a>
         
         <ul class="context-menu" id="contextMenu">
-            <li><a href="#kafka" onclick="localStorage.setItem('product', 'kafka')">Kafka</a></li>
-            <li><a href="#postgres" onclick="localStorage.setItem('product', 'postgresql')">PostgreSQL</a></li>
-            <li><a href="#mysql" onclick="localStorage.setItem('product', 'mysql')">MySQL</a></li>
-            <li><a href="#opensearch" onclick="localStorage.setItem('product', 'opensearch')">OpenSearch</a></li>
         </ul>
     </div>
 </nav>
@@ -165,6 +162,7 @@
         loaderEl.style.display = 'block';
         fetchData();
     }
+    populateProducts();
     fetchData();
 </script>
 

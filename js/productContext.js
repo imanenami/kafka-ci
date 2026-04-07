@@ -15,12 +15,24 @@ window.addEventListener('click', function(e) {
     setProduct();
 });
 
-function setProduct(force=false) {            
+function setProduct(force=false) {
     let product = localStorage.getItem('product') || 'kafka';
     if (product == selectedProduct && !force) return;
     selectedProduct = product;
     document.getElementById("productLogo").setAttribute('src', `static/img/${product}.png`);
+    document.getElementById("productLogo").setAttribute('alt', product);
     if (typeof productChangedCallback === 'function') productChangedCallback(selectedProduct);
+}
+
+function populateProducts() {
+    supportedProducts = ["kafka", "postgresql", "airflow"];
+    console.log(supportedProducts);
+    items = ""
+    supportedProducts.forEach((product) =>
+        items += `<li><a href="#${product}" onclick="localStorage.setItem('product', '${product}')">${betterTitle(product)}</a></li>`
+    );
+    console.log(items);
+    document.getElementById("contextMenu").innerHTML = items;
 }
 
 setProduct(true);

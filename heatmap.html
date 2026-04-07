@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/4.1.0/cdn.min.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/rawData.js"></script>
     
     <style>
@@ -129,10 +130,6 @@
             </a>
             
             <ul class="context-menu" id="contextMenu">
-                <li><a href="#kafka" onclick="localStorage.setItem('product', 'kafka')">Kafka</a></li>
-                <li><a href="#postgres" onclick="localStorage.setItem('product', 'postgresql')">PostgreSQL</a></li>
-                <li><a href="#mysql" onclick="localStorage.setItem('product', 'mysql')">MySQL</a></li>
-                <li><a href="#opensearch" onclick="localStorage.setItem('product', 'opensearch')">OpenSearch</a></li>
             </ul>
         </div>
     </nav>
@@ -283,5 +280,6 @@
         document.getElementById("updated").innerHTML = "Last Update: " + updatedStr;
     </script>
     <script src="js/productContext.js"></script>
+    <script>populateProducts();</script>
 </body>
 </html>

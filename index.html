@@ -6,6 +6,8 @@
     <title>DPE Kafka Central</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="static/style.css">
+    <script src="js/utils.js"></script>
+
     <style>
         :root {
             --bg-color: #f8fafc;
@@ -138,10 +140,6 @@
         </a>
             
         <ul class="context-menu" id="contextMenu">
-            <li><a href="#kafka" onclick="localStorage.setItem('product', 'kafka')">Kafka</a></li>
-            <li><a href="#postgres" onclick="localStorage.setItem('product', 'postgresql')">PostgreSQL</a></li>
-            <li><a href="#mysql" onclick="localStorage.setItem('product', 'mysql')">MySQL</a></li>
-            <li><a href="#opensearch" onclick="localStorage.setItem('product', 'opensearch')">OpenSearch</a></li>
         </ul>
     </div>
     </nav>
@@ -202,5 +200,6 @@
         </div>
     </div>
     <script src="js/productContext.js"></script>
+    <script>populateProducts();</script>
 </body>
 </html>

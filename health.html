@@ -21,10 +21,6 @@
             </a>
             
             <ul class="context-menu" id="contextMenu">
-                <li><a href="#kafka" onclick="localStorage.setItem('product', 'kafka')">Kafka</a></li>
-                <li><a href="#postgres" onclick="localStorage.setItem('product', 'postgresql')">PostgreSQL</a></li>
-                <li><a href="#mysql" onclick="localStorage.setItem('product', 'mysql')">MySQL</a></li>
-                <li><a href="#opensearch" onclick="localStorage.setItem('product', 'opensearch')">OpenSearch</a></li>
             </ul>
         </div>
     </nav>
@@ -64,8 +60,8 @@
                 <h3>${betterTitle(item.name)}</h3>
                 <div class="badge-container">
                     <a href="https://charmhub.io/${item.name}"><img src="https://charmhub.io/${item.name}/${ch_badge_svg}" alt="CharmHub"></a>
-                    <a href="${item.repo}/actions/workflows/release.yaml"><img src="${item.repo}/actions/workflows/release.yaml/badge.svg" alt="Release"></a>
-                    <a href="${item.repo}/actions/workflows/ci.yaml?query=branch%3Amain"><img src="${item.repo}/actions/workflows/ci.yaml/badge.svg?branch=main" alt="Tests"></a>
+                    <a href="${item.repo}/actions/workflows/${item.defaults.release_workflow}"><img src="${item.repo}/actions/workflows/${item.defaults.release_workflow}/badge.svg" alt="Release"></a>
+                    <a href="${item.repo}/actions/workflows/${item.defaults.ci_workflow}"><img src="${item.repo}/actions/workflows/${item.defaults.ci_workflow}/badge.svg" alt="Tests"></a>
                 </div>
             </div>
             `;
@@ -73,6 +69,7 @@
 
         container.innerHTML += html;
     }
+    populateProducts();
     productChangedCallback(selectedProduct)
     </script>
 </body>
